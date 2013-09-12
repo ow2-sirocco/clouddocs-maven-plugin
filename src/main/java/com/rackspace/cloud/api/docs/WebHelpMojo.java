@@ -42,9 +42,11 @@ import com.rackspace.cloud.api.docs.DocBookResolver;
 
 import com.agilejava.docbkx.maven.Parameter;
 import com.agilejava.docbkx.maven.FileUtils;
+import java.io.BufferedReader;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.zip.ZipOutputStream;
 
 public abstract class WebHelpMojo extends AbstractWebhelpMojo {
@@ -422,7 +424,33 @@ public abstract class WebHelpMojo extends AbstractWebhelpMojo {
      */
     public void adjustTransformer(Transformer transformer, String sourceFilename, File targetFile) {
 
+        try {
+            Process proc = Runtime.getRuntime().exec("git rev-parse HEAD", null, targetFile.getParentFile());
 
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+            // Store the value of the current git SHA into a variable
+            String sha = "";
+            String s;
+            while ((s = stdInput.readLine()) != null) {
+                sha = sha + s;
+            }
+
+            transformer.setParameter("gitSHA", sha);
+            
+            // read any errors from the attempted command
+            if(stdError.readLine() != null){
+            System.out.println("Error running \"git rev-parse HEAD\". Is git installed?\n");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+        }
+
+        } catch (Exception e) {
+            System.out.println("Error running \"git rev-parse HEAD\":\n" + e);            
+        }
+        
 	String warBasename;
 	String webhelpOutdir = targetFile.getName().substring(0, targetFile.getName().lastIndexOf('.'));
 	if(null != webhelpDirname && webhelpDirname != ""){					    
