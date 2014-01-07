@@ -250,17 +250,19 @@
 				</xsl:choose>
 		</xsl:variable>
 		<xsl:variable name="raxid" select="if (@rax:id) then @rax:id else @id"/>
-		<xsl:variable name="sectionIdComputed" select="concat(@name,'_',$raxid,'_',translate(parent::wadl:resource/@path, $replacechars, '___'),'_',$sectionId)"/>
-			
-		
-        <xsl:if test="$addMethodPageBreaks">
+		<xsl:variable name="app_raxid" select="if(ancestor::wadl:resources/@xml:id) then concat(ancestor::wadl:resources/@xml:id, '_') else ''"/>
+		<xsl:variable name="sectionIdComputed"
+			select="concat(@name,'_',$app_raxid,$raxid,'_',translate(parent::wadl:resource/@path, $replacechars, '___'),'_',$sectionId)"/>
+
+
+		<xsl:if test="$addMethodPageBreaks">
             <xsl:processing-instruction name="hard-pagebreak"/>
         </xsl:if>
 		<section xml:id="{$sectionIdComputed}">
 			<xsl:processing-instruction name="dbhtml">stop-chunking</xsl:processing-instruction>
 			<title><xsl:value-of select="$method.title"/></title>
-			<xsl:if test="$sectionIdComputed != concat(@name,'_',$raxid,'_',translate(parent::wadl:resource/@path, $replacechars, '___'),'_')">
-				<anchor xml:id="{concat(@name,'_',$raxid,'_',translate(parent::wadl:resource/@path, $replacechars, '___'),'_')}" xreflabel="{$method.title}"/>
+			<xsl:if test="$sectionIdComputed != concat(@name,'_',$app_raxid,$raxid,'_',translate(parent::wadl:resource/@path, $replacechars, '___'),'_')">
+				<anchor xml:id="{concat(@name,'_',$app_raxid,$raxid,'_',translate(parent::wadl:resource/@path, $replacechars, '___'),'_')}" xreflabel="{$method.title}"/>
 			</xsl:if>
 			<xsl:if test="$security = 'writeronly'">
 				<para security="writeronly">Source wadl: <link xlink:href="{@rax:original-wadl}"><xsl:value-of select="@rax:original-wadl"/></link>  (method id: <xsl:value-of select="@rax:id"/>)</para>
@@ -295,7 +297,7 @@
 			<xsl:choose>
 				<xsl:when test="wadl:response[not(starts-with(normalize-space(@status),'2') or starts-with(normalize-space(@status),'3'))]/wadl:doc">
 					<para>
-					The following table shows the possible
+					This table shows the possible
 					response codes for this operation:
 						<informaltable rules="all" width="100%">	
 						<!--	<caption>Response Codes</caption>-->
@@ -325,13 +327,13 @@
 				<xsl:otherwise>
 					<xsl:if test="wadl:response[starts-with(normalize-space(@status),'2') or starts-with(normalize-space(@status),'3')]">
 						<simpara>
-							<emphasis role="bold">Normal Response Code(s): </emphasis>
+							<emphasis role="bold">Normal response codes: </emphasis>
 							<xsl:apply-templates select="wadl:response" mode="preprocess-normal"/>
 						</simpara>
 					</xsl:if>
 					<xsl:if test="wadl:response[not(starts-with(normalize-space(@status),'2') or starts-with(normalize-space(@status),'3'))]">
 						<simpara>
-							<emphasis role="bold">Error Response Code(s): </emphasis>
+							<emphasis role="bold">Error response codes: </emphasis>
 							<!--
 								Put those errors that don't have a set status
 								up front.  These are typically general errors.
@@ -485,7 +487,7 @@
  			select="if (.//xsdxt:code/@title) then .//xsdxt:code[1]/@title
  			else if (.//xsdxt:sample/@title) then .//xsdxt:sample[1]/@title
  			else if (@title) then @title
- 			else ''"/> <!-- a defualt title will be computed below in this case -->
+ 			else ''"/> <!-- a default title will be computed below in this case -->
  		<xsl:variable name="title-calculated">
  			<xsl:choose>
  				<xsl:when test="string-length($title) != 0"><xsl:value-of select="$title"/></xsl:when>
@@ -546,7 +548,7 @@
 			as="xs:string"
 			select="if (@title) then @title
 			else if (.//xsdxt:code/@title) then .//xsdxt:code[1]/@title
-			else ''"/> <!-- a defualt title will be computed below in this case -->
+			else ''"/> <!-- a default title will be computed below in this case -->
 		<xsl:variable name="title-calculated">
 			<xsl:choose>
 				<xsl:when test="string-length($title) != 0"><xsl:value-of select="$title"/></xsl:when>
@@ -744,7 +746,7 @@
     	<xsl:variable name="tableType" select="(: if($style = 'plain') then 'informaltable' else :)'informaltable'"/>
         <xsl:if test="$mode='Request' or $mode='Response'">
         	
-			<para>The following table shows the <xsl:value-of select="$styleCapitalized"/> parameters for the <xsl:value-of select="concat($method.title, ' ', $mode)"/>:</para>
+			<para>This table shows the <xsl:value-of select="$styleCapitalized"/> parameters for the <xsl:value-of select="concat($method.title, ' ', $mode)"/>:</para>
         	<xsl:element name="{$tableType}">
             	<xsl:attribute name="rules">all</xsl:attribute>
             	<xsl:attribute name="width">100%</xsl:attribute>	
@@ -959,7 +961,6 @@
 		</xsl:choose>
 	</xsl:template>
 	
-
 <xsl:template name="hyphenate.camelcase">
   <xsl:param name="content"/>
   <xsl:variable name="head" select="substring($content, 1, 1)"/>
