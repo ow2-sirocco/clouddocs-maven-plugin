@@ -185,6 +185,7 @@ set       toc,title
     <xsl:choose>
       <xsl:when test="$branding = 'openstack'">OpenStack</xsl:when>
       <xsl:when test="$branding = 'repose'">Repose</xsl:when>
+      <xsl:when test="$branding = 'sirocco'">Sirocco</xsl:when>
       <xsl:otherwise>Rackspace</xsl:otherwise>
     </xsl:choose>
   </xsl:param>
@@ -192,6 +193,7 @@ set       toc,title
     <xsl:choose>
       <xsl:when test="$branding = 'openstack'">http://docs.openstack.org/</xsl:when>
       <xsl:when test="$branding = 'repose'">http://openrepose.org/documentation.html</xsl:when>
+      <xsl:when test="$branding = 'sirocco'">http://sirocco.ow2.org/docs</xsl:when>
       <xsl:otherwise>
 	<xsl:choose>
 	  <xsl:when test="$webhelp.war != '' and $webhelp.war != '0'">/</xsl:when>
@@ -378,6 +380,7 @@ ERROR: Feedback email not set but internal comments are enabled.
 	    <xsl:choose>
 		<xsl:when test="$branding = 'openstack'">http://www.openstack.org</xsl:when>
 		<xsl:when test="$branding = 'repose'">http://www.openrepose.org</xsl:when>
+		<xsl:when test="$branding = 'sirocco'">http://sirocco.ow2.org</xsl:when>
 		<xsl:otherwise>http://www.rackspace.com</xsl:otherwise>
 	      </xsl:choose>
 	    </xsl:attribute>
